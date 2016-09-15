@@ -1,0 +1,174 @@
+buildDependenciesWithMake()
+{
+  echo "Building $1 from $2 at $3"
+  PARENTDIR="${DEPENDENCY_BUILD_LOCATION}/$1"
+  cd "$PARENTDIR"
+  EXTRACTCOMMAND=$(getExtractCommand $2)
+  PARENTDIR="${DEPENDENCY_BUILD_LOCATION}/$1"
+  DIR="${DEPENDENCY_BUILD_LOCATION}/$1/$3"
+  $EXTRACTCOMMAND $2
+  cd "$DIR"
+  case $1 in
+    cmake)
+      ./configure --prefix="${DEV_INSTALL_LOCATION}"
+      ;;
+    ffmpeg)
+      ./configure --prefix="${INSTALL_LOCATION}" --enable-shared --disable-static
+      ;;
+    gdal)
+      ./configure --prefix="${INSTALL_LOCATION}" --with-geos="${INSTALL_LOCATION}/bin/geos-config" --with-libtiff="${INSTALL_LOCATION}" --with-geotiff="${INSTALL_LOCATION}"
+      ;;
+    geotiff)
+      ./configure --prefix="${INSTALL_LOCATION}" --with-jpeg-yes --with-libtiff="${INSTALL_LOCATION}" --with-zlib=yes --enable-incode-epsg --with-proj="${INSTALL_LOCATION}"
+      ;;
+    kakadu)
+      ;;
+    mrsid)
+      ;;
+    openjpeg)
+      cmake -G "Unix Makefiles" -DBUILD_THIRDPARTY=true -DCMAKE_INSTALL_PREFIX="${INSTALL_LOCATION}"
+      ;;
+    openscenegraph)
+      cmake -DCMAKE_INSTALL_PREFIX="${INSTALL_LOCATION}"
+      ;; 
+    pdal)
+      cmake -DCMAKE_INSTALL_PREFIX="${INSTALL_LOCATION}"
+      ;;
+    postgis)
+      ./configure --prefix="${PGINSTALL}" --with-geosconfig="${INSTALL_LOCATION}/bin/geos-config" --with-projdir="${INSTALL_LOCATION}" --with-gdalconfig="${INSTALL_LOCATION}/bin/gdal-config"
+      ;;
+    *)
+      ./configure --prefix="${INSTALL_LOCATION}"
+      ;;
+  esac
+  case $1 in
+    kakadu)
+      cd make
+      make -f Makefile-${KAKADU_ARCHITECTURE}
+      cd ..
+      cp lib/${KAKADU_ARCHITECTURE}/* "${INSTALL_LOCATION}/lib"
+      cp bin/${KAKADU_ARCHITECTURE}/* "${INSTALL_LOCATION}/bin"
+      ;;
+    mrsid)
+      # Binary only SDK, so just import into install
+      # Not including the binaries for now in RPM as they conflict with the OSSIM version of GEOS (you can still run them from the build server or move manually)
+      #cp -P Raster_DSDK/bin/* "${INSTALL_LOCATION}/bin"
+      cp -P Raster_DSDK/lib/libltidsdk.so* Raster_DSDK/lib/libtbb.so* "${INSTALL_LOCATION}/lib"
+      #cp -P Lidar_DSDK/bin/* "${INSTALL_LOCATION}/bin"
+      cp -P Lidar_DSDK/lib/liblti_lidar_dsdk.so* "${INSTALL_LOCATION}/lib"
+      ;;
+    *)
+      make -j $(nproc)
+      make install
+      ;;
+  esac
+
+  case $1 in
+    postgis)
+      # Workaround  since install is not copying this target properly
+      cp -P liblwgeom/.libs/liblwgeom* "${INSTALL_LOCATION}"/lib
+      ;;
+    postgresql)
+      # Need this for tgrm indexes
+      cd contrib
+      make
+      make install
+      setupPostgresInit
+  esac
+}
+
+buildJoms()
+{
+    cd "${DEPENDENCY_BUILD_LOCATION}/groovy"
+    EXTRACTCOMMAND=$(getExtractCommand ${GROOVY_FILENAME})   
+    # We need to include Groovy in the RPM build to run the OMAR internal ingest scripts, so extracting to $TARGET_LOCATION
+    cd "${BUILD_LOCATION}"
+    $EXTRACTCOMMAND "${DEPENDENCY_BUILD_LOCATION}/groovy/${GROOVY_FILENAME}"
+    ln -sf "${GROOVY_DIRNAME}" groovy 
+    cd "${OMS_HOME}/joms"
+    cp local.properties.template local.properties
+    #probably still broken for private builds
+    #sed -i "/copy todir/ s/<\!--//" build.xml
+    #sed -i "47s/^-->//" build.xml
+    ant dist
+}
+
+buildRpm()
+{
+    mkdir -p "${RPMBUILD_LOCATION}/${RPM_INSTALL_TOPDIR}" 
+    # Gather up config info for RPM
+    setupRpmConfig
+    mkdir -p "${INSTALL_LOCATION}/conf"
+    cp "$SWD/resources/omar.spec.template" "${RPM_LOCATION}/omar.spec"
+    sed -i "/^Release:/ s/.*/Release: ${RELEASE_VERSION}/" "${RPM_LOCATION}/omar.spec"
+    cd "${TARGET_LOCATION}"
+    tar cf - ossim-${OSSIM_VERSION}/install/ ossim-${OSSIM_VERSION}/${TOMCAT_DIRNAME}/ ossim-${OSSIM_VERSION}/tomcat ossim-${OSSIM_VERSION}/${GROOVY_DIRNAME}/ ossim-${OSSIM_VERSION}/groovy | (cd "${RPMBUILD_LOCATION}/${RPM_INSTALL_TOPDIR}"; tar xf -)
+    cd "${RPMBUILD_LOCATION}"
+    find "${RPM_INSTALL_TOPDIR}" \( -type l -o -type f \) -exec echo '/{}' \; >> "${RPM_LOCATION}/omar.spec"
+    find "${RPM_INSTALL_TOPDIR}" -type d -name logs -exec echo '/{}' \; >> "${RPM_LOCATION}/omar.spec"
+    cd "${RPM_LOCATION}"
+    rpmbuild -bb --buildroot "${RPMBUILD_LOCATION}" omar.spec  
+}
+
+buildPgdata()
+{
+    echo
+    # Need to turn off exit on error and ignore error if postgres user already exists
+    set +e
+    useradd -d "${INSTALL_LOCATION}" postgres
+    # Need to get rid off old copy in case we failed and have to try again
+    rm -rf "${INSTALL_LOCATION}/pgdata"
+    set -e
+    mkdir -p "${INSTALL_LOCATION}/pgdata"
+    chmod 700 "${PGDATA_LOCATION}"
+    chown postgres "${PGDATA_LOCATION}"
+    # Ignore initdb error in case DB already exists
+    set +e
+    su postgres -c "initdb -D ${PGDATA_LOCATION}"
+    set -e
+    setupPostgresConfig
+    # Start Postgres 
+    su postgres -c "pg_ctl -D ${PGDATA_LOCATION} start"
+    echo "Waiting for Postgres Startup"
+    sleep 10
+    cd "${OMAR_HOME}"
+    # OMAR Create Script is not updated for POSTGIS 2.X, so manually create logical db and install Postgis extensions versus the 1.X way
+    su postgres -c "createdb omardb-${OSSIM_VERSION}-prod"
+    psql -U postgres -d omardb-${OSSIM_VERSION}-prod -c "create extension postgis;"
+    psql -U postgres -d omardb-${OSSIM_VERSION}-prod -c "create extension postgis_topology;"
+    # This schema export will create the database schema without having to run the project.  Then is creates an export under target/ddl.sql
+    # Need to upgrade version in case OMAR is not in sync
+    grails set-version ${OSSIM_VERSION}
+    grails prod schema-export
+    su postgres -c "pg_ctl -D ${PGDATA_LOCATION} stop"
+    cd "${INSTALL_LOCATION}"
+    tar czf pgdata.tgz pgdata
+    echo
+    echo -e "\e[1;32mWrote ${INSTALL_LOCATION}/pgdata.tgz\e[0m"
+    echo -e "\e[1;32mInstall this file with \"cd /opt; tar xzf ${INSTALL_LOCATION}/pgdata.tgz\" or move to the destination PostgreSQL server and perform the same\e[0m"
+}
+
+buildWar()
+{
+    cd "${DEPENDENCY_BUILD_LOCATION}/grails"
+    unzip -o "${GRAILS_FILENAME}"
+    cd $OMAR_HOME
+    mkdir -p $OMAR_DEV_HOME/.m2/repository/org/ossim/joms/1.9.0
+    cp $OMS_HOME/lib/joms-1.9.0.jar $OMAR_DEV_HOME/.m2/repository/org/ossim/joms/1.9.0
+    #cp $OMS_HOME/lib/joms-1.9.0.jar 
+    # Blank pom file to trick MAVEN for disconnected build
+    touch $OMAR_DEV_HOME/.m2/repository/org/ossim/joms/1.9.0/joms-1.9.0.pom
+    cp "${OMS_HOME}/joms/libjoms.so" "${INSTALL_LOCATION}/lib64"
+    grails prod war omar.war
+    cp omar.war "${BUILD_LOCATION}/${TOMCAT_DIRNAME}/webapps"
+}
+
+extractTomcat()
+{
+    cd "${DEPENDENCY_BUILD_LOCATION}/tomcat"
+    EXTRACTCOMMAND=$(getExtractCommand ${TOMCAT_FILENAME})
+    cd "${BUILD_LOCATION}"
+    $EXTRACTCOMMAND "${DEPENDENCY_BUILD_LOCATION}/tomcat/${TOMCAT_FILENAME}"
+    ln -s "${TOMCAT_DIRNAME}" tomcat
+}
+

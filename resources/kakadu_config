@@ -1,0 +1,4 @@
+KAKADU_URL="<kakadu_download_url_here>"
+KAKADU_USER="<kakadu_download_username>"
+KAKADU_PASSWORD="<kakadu_download_password>"
+KAKADU_ARCHITECTURE="<BUILD ARCHITECTURE e.g. Linux-x86-64-gcc>"

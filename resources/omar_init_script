@@ -1,0 +1,86 @@
+#!/bin/sh
+#
+# chkconfig: 2345 99 01
+# description: Start OMAR Services
+#
+#
+export OMAR_INSTALL=/opt/omar
+export OSSIM_INSTALL_PREFIX=/opt/omar/install
+export OSSIM_PREFS_FILE=$OSSIM_INSTALL_PREFIX/conf/ossim_preferences
+export JAVA=`which java 2> /dev/null`
+export JAVA_HOME=`dirname $(dirname $JAVA 2> /dev/null) 2> /dev/null`
+
+if [ ! $JAVA_HOME ]; then
+  if [ -d /usr/java/latest ]; then
+    export JAVA_HOME=/usr/java/latest
+    export PATH=$JAVA_HOME/bin:$PATH
+  fi
+fi
+
+JAVAVERSIONINFO="$( java -version 2>&1 )"
+if [[ $JAVAVERSIONINFO =~ .*OpenJDK.* ]]; then
+  if [ -d /usr/java/latest ]; then
+    export JAVA_HOME=/usr/java/latest
+    export PATH=$JAVA_HOME/bin:$PATH
+    JAVAVERSIONINFO="$( java -version 2>&1 )"
+  fi
+  if [[ $JAVAVERSIONINFO =~ .*OpenJDK.* ]]; then
+    echo "OMAR requires Oracle Java"
+    exit 1
+  fi
+fi
+
+export LD_LIBRARY_PATH=$OSSIM_INSTALL_PREFIX/lib64:$OSSIM_INSTALL_PREFIX/lib:$OSSIM_INSTALL_PREFIX/lib64/ossim/plugins
+export CATALINA_HOME=$OMAR_INSTALL/tomcat
+export GROOVY_HOME=$OMAR_INSTALL/groovy
+export PATH=$OMAR_INSTALL/install/bin:$GROOVY_HOME/bin:$CATALINA_HOME/bin:$JAVA_HOME:$PATH
+#export OMAR_CONFIG=$OMAR_INSTALL/install/conf/Config.groovy
+
+PID=$(pgrep -f $OMAR_INSTALL/tomcat)
+
+RETVAL=0
+
+# See how we were called.
+case "$1" in
+  start)
+	if [ $PID ]; then
+	  echo "OMAR is already running"
+	  exit 1
+	fi
+	startup.sh
+	exit $?
+	;;
+
+  status)
+	echo
+	;;
+
+  stop)
+	if [ ! $PID ]; then
+	  echo "OMAR is not running"
+	  exit 0
+	fi
+	shutdown.sh >& /dev/null
+	sleep 5 
+	PID=$(pgrep -f $OMAR_INSTALL/tomcat)
+	if [ $PID ]; then
+	  kill -9 $PID
+	  echo "Killed OMAR with PID $PID"
+	else
+  	  echo "OMAR was shut down"
+	fi
+	
+	exit 0 
+	;;
+
+  restart)
+	shutdown.sh
+	startup.sh
+	;;
+
+  *)
+	echo "Usage: sysstat {start|stop|status|restart}"
+esac
+
+exit ${RETVAL}
+

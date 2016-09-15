@@ -1,0 +1,54 @@
+checkDependencies()
+{
+  # Check for required binaries and Oracle Java
+  BINARY_DEPS="ant bzip2 chmod chown file gcc git g++ java ldconfig libtool make nproc pgrep rpm rpmbuild svn swig tar touch unzip useradd wget"
+  # Redhat/CentOS cannot seem to build MVAPICH2 correctly.  There are various issues with either the c++ libary linkage to C library or linkage to libmpl in various versions.  Making sure the mvapich2-devel is installed so we have all dependencies and building from source using the OSU repo
+  PACKAGE_DEPS="curl-devel fontconfig-devel freetype-devel expat-devel libGL-devel libGLU-devel libjpeg-turbo-devel libpng-devel libxml2-devel nasm readline-devel SDL-devel sqlite-devel unixODBC-devel zlib-devel mvapich2-devel"
+
+  echo "Checking System Dependencies"
+
+  BIN_ERROR_CNT=0
+  for binary in $BINARY_DEPS; do
+    DEP_STATUS=$(checkForBinary $binary)
+    if [ $DEP_STATUS ]; then
+      let $((++BIN_ERROR_CNT))
+    fi
+  done
+
+  PACKAGE_ERROR_CNT=0
+  for package in $PACKAGE_DEPS; do
+    DEP_STATUS=$(checkForPackage $package)
+    if [ $DEP_STATUS ]; then
+      let $((++PACKAGE_ERROR_CNT))
+    fi
+  done
+
+  if [ $BIN_ERROR_CNT -gt 0 -o $PACKAGE_ERROR_CNT -gt 0 ]; then
+    echo "Aborting script due to missing dependencies"
+    exit 1
+  fi
+
+  JAVAVERSIONINFO="$( java -version 2>&1 )"
+  if [[ $JAVAVERSIONINFO =~ .*OpenJDK.* ]]; then
+     export JAVA_HOME=/usr/java/latest
+     export PATH=$JAVA_HOME/bin:$PATH
+     JAVAVERSIONINFO="$( java -version 2>&1 )"
+     if [[ $JAVAVERSIONINFO =~ .*OpenJDK.* ]]; then
+       echo "Script requires Oracle Java to run Grails MAVEN updates"
+       exit 2
+     fi
+  fi
+}
+
+checkOmar()
+{
+  OMAR_STATUS=$(rpm -qa | grep omar-${OSSIM_VERSION} | head -1 | awk '{print $1}')
+  if [ $OMAR_STATUS ]; then
+    set +e
+      echo "Warning OMAR RPM is already installed.  Attempting to stop OMAR and PostgreSQL services to prevent interference with the build process."
+      service omar stop
+      service postgresql stop 
+    set -e
+    echo
+  fi
+}

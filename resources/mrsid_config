@@ -1,0 +1,4 @@
+# RHEL 6
+MRSID_URL=https://s3.amazonaws.com/bin.us.lizardtech.com/download/developer/MrSID_DSDK-9.5.1.4427-linux.x86-64.gcc44.tar.gz
+# RHEL 7
+#MRSID_URL=https://s3.amazonaws.com/bin.us.lizardtech.com/download/developer/MrSID_DSDK-9.5.1.4427-linux.x86-64.gcc48.tar.gz

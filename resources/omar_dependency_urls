@@ -1,0 +1,54 @@
+# This file contains information on retrieving OMAR dependencies for OMAR 1.9.0
+# This information has been separated from the build script to allow updates of dependency versions with minimal script changes
+#
+# This file also supports absolute URL paths (starting with /) 
+# This allows the user to manually download a dependency in case security or network issues are preventing access to one of the hosting sites 
+# This feature is not supported for the OSSIM SVN and OMAR GITHUB downloads
+
+APACHE_MIRROR=apache.mirrors.ionfish.org
+GEOS_URL=http://download.osgeo.org/geos/geos-3.4.2.tar.bz2
+PROJ4_URL=https://github.com/OSGeo/proj.4/archive/4.9.zip
+TIFF_URL=http://download.osgeo.org/libtiff/tiff-4.0.4.tar.gz
+#GEOTIFF_URL=ftp://ftp.remotesensing.org/pub/geotiff/libgeotiff/libgeotiff-1.4.1.tar.gz
+GEOTIFF_URL=http://download.osgeo.org/geotiff/libgeotiff/libgeotiff-1.4.2.tar.gz
+OPENSCENEGRAPH_URL=http://trac.openscenegraph.org/downloads/developer_releases/OpenSceneGraph-3.2.1.zip
+POSTGRESQL_URL=https://ftp.postgresql.org/pub/source/v9.5.3/postgresql-9.5.3.tar.bz2
+POSTGRESQL_JAR_URL=https://jdbc.postgresql.org/download/postgresql-9.4-1201.jdbc41.jar
+POSTGIS_URL=http://download.osgeo.org/postgis/source/postgis-2.1.8.tar.gz
+GDAL_URL=http://download.osgeo.org/gdal/2.1.1/gdal-2.1.1.tar.gz
+TOMCAT_URL=http://${APACHE_MIRROR}/tomcat/tomcat-8/v8.5.5/bin/apache-tomcat-8.5.5.tar.gz
+JAI_URL=http://data.opengeo.org/suite/jai/jai-1_1_3-lib-linux-amd64-jdk.bin
+COMMONS_LANG_URL=http://${APACHE_MIRROR}/commons/lang/binaries/commons-lang-2.6-bin.tar.gz
+COMMONS_COMPRESS_URL=http://${APACHE_MIRROR}/commons/compress/binaries/commons-compress-1.11-bin.tar.gz
+
+OPENJPEG_URL=https://github.com/uclouvain/openjpeg/archive/v2.1.1.tar.gz
+PDAL_URL=http://download.osgeo.org/pdal/PDAL-1.3.0-src.tar.gz
+MVAPICH2_URL=http://mvapich.cse.ohio-state.edu/download/mvapich/mv2/mvapich2-2.2.tar.gz
+# RHEL 6
+MRSID_URL=https://s3.amazonaws.com/bin.us.lizardtech.com/download/developer/MrSID_DSDK-9.5.1.4427-linux.x86-64.gcc44.tar.gz
+# RHEL 7
+#MRSID_URL=https://s3.amazonaws.com/bin.us.lizardtech.com/download/developer/MrSID_DSDK-9.5.1.4427-linux.x86-64.gcc48.tar.gz
+LASZIP_URL=https://github.com/LASzip/LASzip/releases/download/v2.2.0/laszip-src-2.2.0.tar.gz
+
+# FFMPEG
+FFMPEG_URL=https://ffmpeg.org/releases/ffmpeg-2.8.7.tar.bz2
+
+# CMAKE
+CMAKE_URL=https://cmake.org/files/v3.6/cmake-3.6.1.tar.gz
+
+# OSSIM
+OSSIM_URL=https://github.com/rspalko/ossim.git
+OSSIM_VERSION=1.9.0
+OMS_URL=https://github.com/rspalko/ossim-oms.git
+OSSIM_PLUGINS_URL=https://github.com/rspalko/ossim-plugins.git
+OSSIM_VIDEO_URL=https://github.com/rspalko/ossim-video.git
+
+# Groovy/GRAILS/OMAR
+GROOVY_URL=http://dl.bintray.com/groovy/maven/apache-groovy-binary-2.4.4.zip
+GRAILS_URL=https://github.com/grails/grails-core/releases/download/v2.5.4/grails-2.5.4.zip
+OMAR_URL=https://github.com/rspalko/omar
+
+# The grails 2.5.x support should move into master eventually.
+OMAR_BRANCH=dev
+
+KAKADU_ARCHITECTURE=Linux-x86-64-gcc

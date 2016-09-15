@@ -1,0 +1,46 @@
+Summary: OMAR RPM Build
+Name: omar 
+Version: 1.9.0
+Release: 1 
+Group: Applications
+License: LGPL   
+
+%description
+SPEC file to bundle OMAR and all dependencies
+
+%post
+mkdir -p /opt/omar-cache
+ln -s /opt/ossim-1.9.0 /opt/omar
+cp /opt/omar/install/bin/omar_init_script /etc/init.d/omar
+cp /opt/omar/install/bin/postgresql_init_script /etc/init.d/postgresql
+chkconfig --add omar
+chkconfig --add postgresql
+chkconfig omar on
+chkconfig postgresql off
+echo 'Run "chkconfig postgresql on" to make this system the OMAR PostgreSQL server.'
+echo 
+echo "You should update PGDATA in /etc/init.d/postgresql to point to the location of the pgdata directory with OMAR Schema.  That directory must be owned by user postgres with permissions 700"
+echo
+echo "Modify the serverURL path in /opt/omar/install/conf/omar-config.groovy if you are using multiple OMAR servers with a front end load balancer or wish to specify a specific DNS address.  Otherwise all absolute URLs generated from OMAR will utilize the current system ip address and default Tomcat Port number."
+exit 0
+
+%preun
+if [ -e /etc/init.d/omar ]; then
+  service omar stop
+fi
+if [ -e /etc/init.d/postgresql ]; then
+  service postgresql stop
+fi
+exit 0
+
+%postun
+unlink /opt/omar
+rm -rf /opt/ossim-1.9.0
+chkconfig --del omar
+chkconfig --del postgresql
+rm -f /etc/init.d/omar
+rm -f /etc/init.d/postgresql
+rmdir /opt/omar-cache
+exit 0
+
+%files

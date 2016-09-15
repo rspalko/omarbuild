@@ -1,0 +1,45 @@
+setupPostgresConfig()
+{
+  sed -i "/listen_addresses/i listen_addresses = '*'" "${PGDATA_LOCATION}/postgresql.conf"
+  # This entry should be modified to limit access to IP ranges on the installation network
+  sed -i "/IPv4 local connections/a host    all             all             0.0.0.0/0               trust" "${PGDATA_LOCATION}/pg_hba.conf"
+}
+
+setupPostgresInit()
+{
+      # Put a copy of the Linux init script in the BIN
+      cp start-scripts/linux "${INSTALL_LOCATION}/bin/postgresql_init_script"
+      chmod 755 "${INSTALL_LOCATION}/bin/postgresql_init_script"
+      # Make postgres user inherent exports from init script.  Need this for PostGIS libs.
+      sed -i "s/su - /su /g" "${INSTALL_LOCATION}/bin/postgresql_init_script"
+      sed -i "/EDIT FROM HERE/a export LD_LIBRARY_PATH=/opt/omar/install/lib" "${INSTALL_LOCATION}/bin/postgresql_init_script"
+      sed -i "s/^prefix=.*$/prefix=\"\/opt\/omar\/install\"/" "${INSTALL_LOCATION}/bin/postgresql_init_script"
+      sed -i "s/^PGDATA=.*$/PGDATA=\"\/opt\/pgdata\"/" "${INSTALL_LOCATION}/bin/postgresql_init_script"
+}
+
+setupRpmConfig()
+{
+    mkdir -p "${INSTALL_LOCATION}/conf"
+    cp "${OMAR_HOME}/grails-app/conf/Config.groovy" "${INSTALL_LOCATION}/conf/omar-config.groovy"
+    cp "${OMAR_DEV_HOME}/support/scripts/omarRunScript.sh" "${INSTALL_LOCATION}/bin"
+    cp "${OMAR_DEV_HOME}/support/scripts/indexFiles.groovy" "${INSTALL_LOCATION}/bin"
+    cp "${OMAR_DEV_HOME}/support/scripts/removeRaster.groovy" "${INSTALL_LOCATION}/bin"
+    cp "${OMAR_DEV_HOME}/support/scripts/removeVideo.groovy" "${INSTALL_LOCATION}/bin"
+    cp "${OMAR_DEV_HOME}/support/scripts/stageRaster.groovy" "${INSTALL_LOCATION}/bin"
+    cp "${OMAR_DEV_HOME}/support/scripts/synchFiles.groovy" "${INSTALL_LOCATION}/bin"
+    #sed -i "/^omar\.serverURL/ s/\/omar/:8080\/omar/" "${INSTALL_LOCATION}/conf/omar-config.groovy"
+    #sed -i "/runScript/ s/.*/    runScript = \"\/opt\/omar\/install\/bin\/omarRunScript\.sh\"/" "${INSTALL_LOCATION}/conf/omar-config.groovy"
+    sed -i "/referenceDataDirectory/ s/.*/   referenceDataDirectory = \"\/opt\/omar-cache\"/" "${INSTALL_LOCATION}/conf/omar-config.groovy"
+    echo "dataSource.url=jdbc:postgresql:omardb-${OSSIM_VERSION}-prod" > "${INSTALL_LOCATION}/conf/omar-config.properties"
+    cp "$SWD/resources/.bashrc" "${INSTALL_LOCATION}"
+    cp "$SWD/resources/omar_init_script" "${INSTALL_LOCATION}/bin"
+    cp "$SWD/resources/ossim_preferences_template" "${INSTALL_LOCATION}/conf/ossim_preferences"
+
+    # Add a map from the internet, this entry can be modified to a map on the appropriate network
+    sed -i "/layers = \[/a \ \ \ \ \ \ \ \ \]," "${INSTALL_LOCATION}/conf/omar-config.groovy"
+    sed -i "/layers = \[/a \ \ \ \ \ \ \ \ \ \ \ \ options: defaultOptions" "${INSTALL_LOCATION}/conf/omar-config.groovy" 
+    sed -i "/layers = \[/a \ \ \ \ \ \ \ \ \ \ \ \ name: \"OnEarth LandSat\"," "${INSTALL_LOCATION}/conf/omar-config.groovy"
+    sed -i "/layers = \[/a \ \ \ \ \ \ \ \ \ \ \ \ params: \[layers: \"OnEarth\", format: \"image\/png\", transparent: true, bgcolor: '#99B3CC'\]," "${INSTALL_LOCATION}/conf/omar-config.groovy"
+    sed -i "/layers = \[/a \ \ \ \ \ \ \ \ \ \ \ \ url: \"http:\/\/hyperquad\.ucsd\.edu\/cgi-bin\/onearth\"," "${INSTALL_LOCATION}/conf/omar-config.groovy"
+    sed -i "/layers = \[/a \ \ \ \ \ \ \ \ \[" "${INSTALL_LOCATION}/conf/omar-config.groovy"
+}

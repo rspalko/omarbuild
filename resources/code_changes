@@ -1,0 +1,23 @@
+# There is high potential for breaking changes in latest tree to occur.  Please comment out in build_omar.sh if compilation issues occur
+makeOmarCodeChanges()
+{
+    # Support the external config files by adding to the internal compiled config
+    sed  -i "/\( System\.env\.OMAR_CONFIG \)/i grails.config.locations = [ \"file:/opt/omar/install/conf/\$\{appName\}-config.groovy\", \"file:/opt/omar/install/conf/\$\{appName\}-config.properties\"]" "${OMAR_HOME}/grails-app/conf/Config.groovy"
+
+
+  # Never support create-drop mode which re-initializes the database during software restart 
+  sed -i "s/create-drop/update/g" "${OMAR_HOME}/grails-app/conf/DataSource.groovy"
+
+  # The following 2 changes are only required when using the OMAR internal scripts to test imagery ingest
+
+  # Change CLASSPATH config for OMAR staging
+  sed -i "s/^.*CLASSPATH:.*$/   CLASSPATH:\"\$\{System\.env\.CATALINA_HOME\}\/webapps\/omar\/WEB-INF\/lib\",/" "${OMAR_DEV_HOME}/support/scripts/omarRunScript.sh"
+  sed -i "s/^.*OMAR_THUMBNAIL_CACHE:.*$/   OMAR_THUMBNAIL_CACHE:\"\/opt\/omar-cache\",/" "${OMAR_DEV_HOME}/support/scripts/omarRunScript.sh"
+  sed -i "s/^.*OMAR_URL:.*$/   OMAR_URL:\"http:\/\/localhost:${OMAR_PORT}\/omar\",/" "${OMAR_DEV_HOME}/support/scripts/omarRunScript.sh"
+}
+
+makeOssimCodeChanges()
+{
+  # None required at this time
+  echo -n ""
+}

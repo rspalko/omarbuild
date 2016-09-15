@@ -1,0 +1,139 @@
+# Utility functions to avoid repetitive code
+
+extractBase()
+{
+  if [[ "$1" =~ (.*[0-9])\..* ]]; then
+    echo ${BASH_REMATCH[1]}
+  else
+    echo $1
+  fi
+}
+
+removeExtensions()
+{
+  RS=$1
+  RS=${RS%.tar.gz}
+  RS=${RS%.tgz}
+  RS=${RS%.zip}
+  RS=${RS%.tar.bz2}
+  echo $RS
+} 
+
+checkForBinary()
+{
+  type $1 >/dev/null 2>&1 || { echo >&2 "Script requires $1 but it's not installed.  Try \"yum provides */*bin/$1\" to find package"; echo 1; }
+}
+
+checkForLibrary()
+{
+  LDLIB=$(ldconfig -p | grep $1 | head -1 | awk '{print $1}')
+  if [ ! $LDLIB ]; then
+    echo >&2 "Script requires $1 library but it's not installed.  Try \"yum search $1\" to find package"
+    echo 1
+  fi
+}
+
+checkForPackage()
+{
+  PACKAGE=$(rpm -qa | grep $1 | head -1 | awk '{print $1}')
+  if [ ! $PACKAGE ]; then
+    echo >&2 "Script requires $1 package but it's not installed.  Try \"yum search $1\" to find the package"
+    echo 1
+  fi
+}
+
+retrieveDependencyWithWget()
+{
+  mkdir -p $1
+  DOWNLOADFILENAME=$(basename $2)
+  cd $1
+  if [[ $2 == http* ]] || [[ $2 == ftp* ]]; then
+    pushd .
+    cd "${CACHE_LOCATION}"
+    DOWNLOADFILENAME=$(basename $2)
+    if [ ! -e "${DOWNLOADFILENAME}" ]; then
+      if [[ $1 == kakadu ]]; then
+        wget --http-user $KAKADU_USER --http-password $KAKADU_PASSWORD $2
+      else
+        wget $2
+      fi
+    fi
+    popd
+    cp "${CACHE_LOCATION}/${DOWNLOADFILENAME}" . 
+  fi
+  
+  if [[ $2 == /* ]]; then
+    cp $2 .
+  fi
+  cd ..
+}
+
+getOssim()
+{
+  cd "${BUILD_LOCATION}"
+  rm -rf ossim-src
+  mkdir ossim-src
+  cd ossim-src
+  git clone -b dev "${OSSIM_URL}"
+  git clone -b dev "${OMS_URL}"
+  git clone -b dev "${OSSIM_PLUGINS_URL}"
+  git clone -b dev "${OSSIM_VIDEO_URL}"
+  #svn co "${OSSIM_URL}"
+  #mv trunk ossim-src
+  #cd "${OMS_HOME}/joms/lib"
+  #wget "${COMMONS_LANG_URL}" -O commons-lang.jar
+  #wget "${COMMONS_COMPRESS_URL}" -O commons-compress.jar 
+  cd "${BUILD_LOCATION}"
+}
+
+getOmar()
+{
+  git clone -b $OMAR_BRANCH "${OMAR_URL}"
+}
+
+getOmarMavenDeps()
+{
+  cd "${OMAR_DEV_HOME}"
+
+  if [ -e "${CACHE_LOCATION}/m2.tgz" ]; then
+    tar xzf "${CACHE_LOCATION}/m2.tgz"
+  else
+    # Get OMAR Maven Dependencies
+    mkdir -p $MAVEN_REPO
+    cd "${DEPENDENCY_BUILD_LOCATION}/grails"
+    unzip -o "${GRAILS_FILENAME}"
+    PATH=$GRAILS_HOME/bin:$PATH
+    cd "${OMAR_HOME}"
+    sed -i "/grails\.project\.source\.level/a grails.project.dependency.cache.dir = \"${OMAR_DEV_HOME}\"" grails-app/conf/BuildConfig.groovy
+    cp grails-app/conf/BuildConfig.groovy grails-app/conf/BuildConfig.groovy.save
+    cp ../../plugins/omar-oms/grails-app/conf/BuildConfig.groovy ../../plugins/omar-oms/grails-app/conf/BuildConfig.groovy.save
+
+    # Apparently the codehaus MAVEN repo is EOL and they randomly and intentionally return bad content if you hit their EOL server with too many requests.  Modifying the default MAVEN config to use other repos by default
+    sed -i "s/checksums true/checksums false/" grails-app/conf/BuildConfig.groovy
+    sed -i "/http:\/\/download.java.net\/maven\/2\/\|http:\/\/repository.jboss.com\/maven2\// s/\/\/\s*mavenRepo/mavenRepo/g" grails-app/conf/BuildConfig.groovy
+
+    # Disable MAVEN download for JOMS as we will build this later and push into repo
+    sed -i "/org.ossim:joms/ s/compile/\/\/compile/" ../../plugins/omar-oms/grails-app/conf/BuildConfig.groovy
+
+    # MAVEN download of all dependencies
+    grails refresh-dependencies --non-interactive
+
+    # Restore the saved config
+    mv -f grails-app/conf/BuildConfig.groovy.save grails-app/conf/BuildConfig.groovy
+    mv -f ../../plugins/omar-oms/grails-app/conf/BuildConfig.groovy.save ../../plugins/omar-oms/grails-app/conf/BuildConfig.groovy
+    cd "${OMAR_DEV_HOME}"
+    tar czf "${CACHE_LOCATION}/m2.tgz" .m2 
+  fi
+}
+
+getExtractCommand()
+{
+  FILEOUT=$(file $1)
+  if [[ "$FILEOUT" =~ "gzip" ]]; then
+    echo "tar xzf "
+  elif [[ "$FILEOUT" =~ "bzip" ]]; then
+    echo "tar xjf "
+  elif [[ "$FILEOUT" =~ "Zip" ]]; then
+    echo "unzip -o " 
+  fi
+}
