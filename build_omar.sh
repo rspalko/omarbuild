@@ -81,7 +81,7 @@ if [ $RUNOPTION -eq "1" -o $RUNOPTION -eq "3" ]; then
   source $SWD/resources/omar_dependency_urls
 
   mkdir -p "${TARGET_LOCATION}"
-  touch "${TARGET_LOCATION}/${MARKER}"
+  #touch "${TARGET_LOCATION}/${MARKER}"
   mkdir -p "${BUILD_LOCATION}"
   mkdir -p "${DEPENDENCY_BUILD_LOCATION}"
   cd "${DEPENDENCY_BUILD_LOCATION}"
