@@ -87,8 +87,8 @@ if [ $RUNOPTION -eq "1" -o $RUNOPTION -eq "3" ]; then
   cd "${DEPENDENCY_BUILD_LOCATION}"
 
   # Retrieve the dependencies
-  packages=("geos" "proj4" "tiff" "geotiff" "openscenegraph" "postgresql" "postgis" "gdal" "ffmpeg" "cmake" "groovy" "grails" "tomcat" "jai" "openjpeg" "mrsid" "laszip" "kakadu" "mvapich2")
-  urls=("${GEOS_URL}" "${PROJ4_URL}" "${TIFF_URL}" "${GEOTIFF_URL}" "${OPENSCENEGRAPH_URL}" "${POSTGRESQL_URL}" "${POSTGIS_URL}" "${GDAL_URL}" "${FFMPEG_URL}" "${CMAKE_URL}" "${GROOVY_URL}" "${GRAILS_URL}" "${TOMCAT_URL}" "${JAI_URL}" "${OPENJPEG_URL}" "${MRSID_URL}" "${LASZIP_URL}" "${KAKADU_URL}" "${MVAPICH2_URL}")
+  packages=("geos" "proj4" "tiff" "geotiff" "openscenegraph" "postgresql" "postgis" "gdal" "ffmpeg" "cmake" "groovy" "grails" "tomcat" "jai" "openjpeg" "mrsid" "laszip" "kakadu" "mvapich2" "pdal")
+  urls=("${GEOS_URL}" "${PROJ4_URL}" "${TIFF_URL}" "${GEOTIFF_URL}" "${OPENSCENEGRAPH_URL}" "${POSTGRESQL_URL}" "${POSTGIS_URL}" "${GDAL_URL}" "${FFMPEG_URL}" "${CMAKE_URL}" "${GROOVY_URL}" "${GRAILS_URL}" "${TOMCAT_URL}" "${JAI_URL}" "${OPENJPEG_URL}" "${MRSID_URL}" "${LASZIP_URL}" "${KAKADU_URL}" "${MVAPICH2_URL}" "${PDAL_URL}")
 
   numpackages=${#packages[@]}
   i=0
@@ -187,9 +187,9 @@ if [ $RUNOPTION -eq "2" -o $RUNOPTION -eq "3" ]; then
   touch "${TARGET_LOCATION}/${MARKER}"
 
   mkdir -p "${INSTALL_LOCATION}"
-  packages=("cmake" "openscenegraph" "tiff" "proj4" "geotiff" "geos" "ffmpeg" "gdal" "postgresql" "postgis" "openjpeg" "laszip" "kakadu" "mrsid" "mvapich2") 
-  files=($CMAKE_FILENAME $OPENSCENEGRAPH_FILENAME $TIFF_FILENAME $PROJ4_FILENAME $GEOTIFF_FILENAME $GEOS_FILENAME $FFMPEG_FILENAME $GDAL_FILENAME $POSTGRESQL_FILENAME $POSTGIS_FILENAME $OPENJPEG_FILENAME $LASZIP_FILENAME $KAKADU_FILENAME $MRSID_FILENAME $MVAPICH2_FILENAME)
-  dirs=($CMAKE_DIRNAME $OPENSCENEGRAPH_DIRNAME $TIFF_DIRNAME $PROJ4_DIRNAME $GEOTIFF_DIRNAME $GEOS_DIRNAME $FFMPEG_DIRNAME $GDAL_DIRNAME $POSTGRESQL_DIRNAME $POSTGIS_DIRNAME $OPENJPEG_DIRNAME $LASZIP_DIRNAME $KAKADU_DIRNAME $MRSID_DIRNAME $MVAPICH2_DIRNAME)
+  packages=("cmake" "openscenegraph" "tiff" "proj4" "geotiff" "geos" "ffmpeg" "gdal" "postgresql" "postgis" "openjpeg" "laszip" "kakadu" "mrsid" "mvapich2" "pdal") 
+  files=($CMAKE_FILENAME $OPENSCENEGRAPH_FILENAME $TIFF_FILENAME $PROJ4_FILENAME $GEOTIFF_FILENAME $GEOS_FILENAME $FFMPEG_FILENAME $GDAL_FILENAME $POSTGRESQL_FILENAME $POSTGIS_FILENAME $OPENJPEG_FILENAME $LASZIP_FILENAME $KAKADU_FILENAME $MRSID_FILENAME $MVAPICH2_FILENAME $PDAL_FILENAME)
+  dirs=($CMAKE_DIRNAME $OPENSCENEGRAPH_DIRNAME $TIFF_DIRNAME $PROJ4_DIRNAME $GEOTIFF_DIRNAME $GEOS_DIRNAME $FFMPEG_DIRNAME $GDAL_DIRNAME $POSTGRESQL_DIRNAME $POSTGIS_DIRNAME $OPENJPEG_DIRNAME $LASZIP_DIRNAME $KAKADU_DIRNAME $MRSID_DIRNAME $MVAPICH2_DIRNAME $PDAL_DIRNAME)
 
   numpackages=${#packages[@]}
   i=0
@@ -225,6 +225,9 @@ if [ $RUNOPTION -eq "2" -o $RUNOPTION -eq "3" ]; then
     make clean
     make -j $(nproc)
     make install
+    cp $SWD/resources/ossim_preferences_template "${BUILD_LOCATION}/ossim_preferences"
+    export OSSIM_PREFS_FILE="${BUILD_LOCATION}/ossim_prefer
+ences"
     let $((i++))
     echo $i > "${LAST_BUILD_STEP_FILE}"
   fi
