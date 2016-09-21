@@ -12,6 +12,8 @@ source $SWD/resources/kakadu_config
 source $SWD/resources/mrsid_config
 source $SWD/resources/files_and_dirs
 
+export OSSIM_PREFS_FILE="${BUILD_LOCATION}/ossim_preferences"
+
 #source $SWD/resources/release_version
 #source $SWD/resources/build_functions
 
