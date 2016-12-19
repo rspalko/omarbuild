@@ -263,7 +263,7 @@ wkt_database_file: $(OSSIM_INSTALL_PREFIX)/share/ossim/projection/ossim_wkt_pcs.
 // - Can be downloaded from svn:
 // svn co http://svn.osgeo.org/ossim/trunk/ossim_package_support/geoids geoids
 //---
-geoid_egm_96_grid: $(OSSIM_INSTALL_PREFIX)/share/ossim/geoids/geoid1996/egm96.grd
+geoid_egm_96_grid: $(OSSIM_INSTALL_PREFIX)/share/ossim/geoids/egm96.grd
 
 //---
 // Location of other shared files can be accessed using this preference to permit 
