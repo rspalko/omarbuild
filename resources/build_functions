@@ -7,13 +7,16 @@ buildDependenciesWithMake()
   PARENTDIR="${DEPENDENCY_BUILD_LOCATION}/$1"
   DIR="${DEPENDENCY_BUILD_LOCATION}/$1/$3"
   $EXTRACTCOMMAND $2
+  if [[ "$2" =~ "last_x264" ]]; then
+    mv x264-snapshot* last_x264
+  fi
   cd "$DIR"
   case $1 in
     cmake)
       ./configure --prefix="${DEV_INSTALL_LOCATION}"
       ;;
     ffmpeg)
-      ./configure --prefix="${INSTALL_LOCATION}" --enable-shared --disable-static
+      PKG_CONFIG_PATH="${INSTALL_LOCATION}/lib/pkgconfig" CFLAGS="-I${INSTALL_LOCATION}/include" LDFLAGS="-L${INSTALL_LOCATION}/lib" ./configure --prefix="${INSTALL_LOCATION}" --enable-gpl --enable-libtheora --enable-libvpx --enable-libx264 --enable-libx265 --enable-shared --disable-static
       ;;
     gdal)
       ./configure --prefix="${INSTALL_LOCATION}" --with-geos="${INSTALL_LOCATION}/bin/geos-config" --with-libtiff="${INSTALL_LOCATION}" --with-geotiff="${INSTALL_LOCATION}"
@@ -37,6 +40,19 @@ buildDependenciesWithMake()
     postgis)
       ./configure --prefix="${PGINSTALL}" --with-geosconfig="${INSTALL_LOCATION}/bin/geos-config" --with-projdir="${INSTALL_LOCATION}" --with-gdalconfig="${INSTALL_LOCATION}/bin/gdal-config"
       ;;
+    theora)
+      ./configure --prefix="${INSTALL_LOCATION}" --with-ogg="${INSTALL_LOCATION}" --with-vorbis="${INSTALL_LOCATION}"
+      ;;
+    vpx)
+      ./configure --prefix="${INSTALL_LOCATION}" --enable-shared
+      ;;
+    x264)
+      ./configure --prefix="${INSTALL_LOCATION}" --enable-shared
+      ;;
+    x265)
+      cd build/linux 
+      cmake -DCMAKE_INSTALL_PREFIX="${INSTALL_LOCATION}" -G "Unix Makefiles" ../../source 
+      ;;
     *)
       ./configure --prefix="${INSTALL_LOCATION}"
       ;;
@@ -56,6 +72,11 @@ buildDependenciesWithMake()
       cp -P Raster_DSDK/lib/libltidsdk.so* Raster_DSDK/lib/libtbb.so* "${INSTALL_LOCATION}/lib"
       #cp -P Lidar_DSDK/bin/* "${INSTALL_LOCATION}/bin"
       cp -P Lidar_DSDK/lib/liblti_lidar_dsdk.so* "${INSTALL_LOCATION}/lib"
+      ;;
+    x265)
+      make -j $(nproc)
+      make install
+      cd ../..
       ;;
     *)
       make -j $(nproc)
@@ -140,6 +161,7 @@ buildPgdata()
     # Need to upgrade version in case OMAR is not in sync
     grails set-version ${OSSIM_VERSION}
     grails prod schema-export
+    psql -U postgres -d omardb-${OSSIM_VERSION}-prod -c "insert into repository (id, version, repository_base_dir) values (0,0,'/lustre');"
     su postgres -c "pg_ctl -D ${PGDATA_LOCATION} stop"
     cd "${INSTALL_LOCATION}"
     tar czf pgdata.tgz pgdata

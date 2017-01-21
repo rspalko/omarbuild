@@ -6,32 +6,43 @@
 # This feature is not supported for the OSSIM SVN and OMAR GITHUB downloads
 
 APACHE_MIRROR=apache.mirrors.ionfish.org
-GEOS_URL=http://download.osgeo.org/geos/geos-3.4.2.tar.bz2
-PROJ4_URL=https://github.com/OSGeo/proj.4/archive/4.9.zip
-TIFF_URL=http://download.osgeo.org/libtiff/tiff-4.0.4.tar.gz
+GEOS_URL=http://download.osgeo.org/geos/geos-3.5.1.tar.bz2
+PROJ4_URL=http://download.osgeo.org/proj/proj-4.9.3.tar.gz
+TIFF_URL=http://download.osgeo.org/libtiff/tiff-4.0.7.tar.gz
 #GEOTIFF_URL=ftp://ftp.remotesensing.org/pub/geotiff/libgeotiff/libgeotiff-1.4.1.tar.gz
 GEOTIFF_URL=http://download.osgeo.org/geotiff/libgeotiff/libgeotiff-1.4.2.tar.gz
-OPENSCENEGRAPH_URL=http://trac.openscenegraph.org/downloads/developer_releases/OpenSceneGraph-3.2.1.zip
-POSTGRESQL_URL=https://ftp.postgresql.org/pub/source/v9.5.3/postgresql-9.5.3.tar.bz2
-POSTGRESQL_JAR_URL=https://jdbc.postgresql.org/download/postgresql-9.4-1201.jdbc41.jar
-POSTGIS_URL=http://download.osgeo.org/postgis/source/postgis-2.1.8.tar.gz
-GDAL_URL=http://download.osgeo.org/gdal/2.1.1/gdal-2.1.1.tar.gz
+OPENSCENEGRAPH_URL=http://trac.openscenegraph.org/downloads/developer_releases/OpenSceneGraph-3.4.0.zip
+POSTGRESQL_URL=https://ftp.postgresql.org/pub/source/v9.6.1/postgresql-9.6.1.tar.bz2
+POSTGRESQL_JAR_URL=https://jdbc.postgresql.org/download/postgresql-9.4.1212.jar
+POSTGIS_URL=http://download.osgeo.org/postgis/source/postgis-2.3.1.tar.gz
+GDAL_URL=http://download.osgeo.org/gdal/2.1.2/gdal-2.1.2.tar.gz
 #TOMCAT_URL=http://${APACHE_MIRROR}/tomcat/tomcat-8/v8.5.5/bin/apache-tomcat-8.5.5.tar.gz
-TOMCAT_URL=http://archive.apache.org/dist/tomcat/tomcat-8/v8.5.5/bin/apache-tomcat-8.5.5.tar.gz
+TOMCAT_URL=http://supergsego.com/apache/tomcat/tomcat-8/v8.5.11/bin/apache-tomcat-8.5.11.tar.gz
+
+# FFMPEG dependencies
+OGG_URL=http://downloads.xiph.org/releases/ogg/libogg-1.3.2.tar.gz
+VORBIS_URL=http://downloads.xiph.org/releases/vorbis/libvorbis-1.3.5.tar.gz
+THEORA_URL=http://downloads.xiph.org/releases/theora/libtheora-1.1.1.tar.bz2
+YASM_URL=http://www.tortall.net/projects/yasm/releases/yasm-1.3.0.tar.gz
+X264_URL=ftp://ftp.videolan.org/pub/x264/snapshots/last_x264.tar.bz2
+X265_URL=https://bitbucket.org/multicoreware/x265/downloads/x265_2.2.tar.gz
+VPX_URL=http://storage.googleapis.com/downloads.webmproject.org/releases/webm/libvpx-1.6.1.tar.bz2
+
+
 JAI_URL=http://data.opengeo.org/suite/jai/jai-1_1_3-lib-linux-amd64-jdk.bin
 COMMONS_LANG_URL=http://${APACHE_MIRROR}/commons/lang/binaries/commons-lang-2.6-bin.tar.gz
 COMMONS_COMPRESS_URL=http://${APACHE_MIRROR}/commons/compress/binaries/commons-compress-1.11-bin.tar.gz
 
-OPENJPEG_URL=https://github.com/uclouvain/openjpeg/archive/v2.1.1.tar.gz
-PDAL_URL=http://download.osgeo.org/pdal/PDAL-1.3.0-src.tar.gz
+OPENJPEG_URL=https://github.com/uclouvain/openjpeg/archive/v2.1.2.tar.gz
+PDAL_URL=http://download.osgeo.org/pdal/PDAL-1.4.0-src.tar.gz
 MVAPICH2_URL=http://mvapich.cse.ohio-state.edu/download/mvapich/mv2/mvapich2-2.2.tar.gz
 LASZIP_URL=https://github.com/LASzip/LASzip/releases/download/v2.2.0/laszip-src-2.2.0.tar.gz
 
 # FFMPEG
-FFMPEG_URL=https://ffmpeg.org/releases/ffmpeg-2.8.7.tar.bz2
+FFMPEG_URL=https://ffmpeg.org/releases/ffmpeg-2.8.10.tar.bz2
 
 # CMAKE
-CMAKE_URL=https://cmake.org/files/v3.6/cmake-3.6.1.tar.gz
+CMAKE_URL=https://cmake.org/files/v3.7/cmake-3.7.2.tar.gz
 
 # OSSIM
 OSSIM_URL=https://github.com/rspalko/ossim.git
