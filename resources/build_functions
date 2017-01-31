@@ -73,6 +73,11 @@ buildDependenciesWithMake()
       #cp -P Lidar_DSDK/bin/* "${INSTALL_LOCATION}/bin"
       cp -P Lidar_DSDK/lib/liblti_lidar_dsdk.so* "${INSTALL_LOCATION}/lib"
       ;;
+    proj)
+      make -j $(nproc)
+      make install
+      # Some OMAR dependency junk references this location
+      ln -s "${INSTALL_LOCATION}/lib/libproj.so.12.0.0" "${INSTALL_LOCATION}/lib/libproj.so.0"
     x265)
       make -j $(nproc)
       make install

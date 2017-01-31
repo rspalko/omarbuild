@@ -36,10 +36,10 @@ setupRpmConfig()
     cp "$SWD/resources/ossim_preferences_template" "${INSTALL_LOCATION}/conf/ossim_preferences"
 
     # Add a map from the internet, this entry can be modified to a map on the appropriate network
-    sed -i "/layers = \[/a \ \ \ \ \ \ \ \ \]," "${INSTALL_LOCATION}/conf/omar-config.groovy"
-    sed -i "/layers = \[/a \ \ \ \ \ \ \ \ \ \ \ \ options: defaultOptions" "${INSTALL_LOCATION}/conf/omar-config.groovy" 
-    sed -i "/layers = \[/a \ \ \ \ \ \ \ \ \ \ \ \ name: \"OnEarth LandSat\"," "${INSTALL_LOCATION}/conf/omar-config.groovy"
-    sed -i "/layers = \[/a \ \ \ \ \ \ \ \ \ \ \ \ params: \[layers: \"OnEarth\", format: \"image\/png\", transparent: true, bgcolor: '#99B3CC'\]," "${INSTALL_LOCATION}/conf/omar-config.groovy"
-    sed -i "/layers = \[/a \ \ \ \ \ \ \ \ \ \ \ \ url: \"http:\/\/hyperquad\.ucsd\.edu\/cgi-bin\/onearth\"," "${INSTALL_LOCATION}/conf/omar-config.groovy"
-    sed -i "/layers = \[/a \ \ \ \ \ \ \ \ \[" "${INSTALL_LOCATION}/conf/omar-config.groovy"
+    #sed -i "/layers = \[/a \ \ \ \ \ \ \ \ \]," "${INSTALL_LOCATION}/conf/omar-config.groovy"
+    #sed -i "/layers = \[/a \ \ \ \ \ \ \ \ \ \ \ \ options: defaultOptions" "${INSTALL_LOCATION}/conf/omar-config.groovy" 
+    #sed -i "/layers = \[/a \ \ \ \ \ \ \ \ \ \ \ \ name: \"OnEarth LandSat\"," "${INSTALL_LOCATION}/conf/omar-config.groovy"
+    #sed -i "/layers = \[/a \ \ \ \ \ \ \ \ \ \ \ \ params: \[layers: \"OnEarth\", format: \"image\/png\", transparent: true, bgcolor: '#99B3CC'\]," "${INSTALL_LOCATION}/conf/omar-config.groovy"
+    #sed -i "/layers = \[/a \ \ \ \ \ \ \ \ \ \ \ \ url: \"http:\/\/hyperquad\.ucsd\.edu\/cgi-bin\/onearth\"," "${INSTALL_LOCATION}/conf/omar-config.groovy"
+    #sed -i "/layers = \[/a \ \ \ \ \ \ \ \ \[" "${INSTALL_LOCATION}/conf/omar-config.groovy"
 }
