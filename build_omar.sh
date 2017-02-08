@@ -33,10 +33,11 @@ source $SWD/resources/dependency_check
 
 checkOmar
 checkDependencies
+checkMvapich2
 
 # We should have JAVA now if we are still running
 export JAVA=`which java`
-JAVA_HOME=`dirname $(dirname $JAVA)`
+JAVA_HOME=${JAVA_HOME:-`dirname $(dirname $JAVA)`}
 
 # Ask for user input
 clear

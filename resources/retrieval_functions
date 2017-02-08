@@ -1,3 +1,5 @@
+#!/bin/bash
+# vim: expandtab ts=2
 # Utility functions to avoid repetitive code
 
 extractBase()
