@@ -4,8 +4,8 @@
 checkDependencies()
 {
   # Check for required binaries and Oracle Java
-  BINARY_DEPS="ant bzip2 chmod chown file gcc git g++ java ldconfig libtool make nproc pgrep rpm rpmbuild svn swig tar touch unzip useradd wget"
-  PACKAGE_DEPS="curl-devel fontconfig-devel freetype-devel expat-devel libGL-devel libGLU-devel libjpeg-turbo-devel libpng-devel libxml2-devel nasm readline-devel SDL-devel sqlite-devel unixODBC-devel zlib-devel libibmad-devel"
+  BINARY_DEPS="ant bzip2 chmod chown file gcc git g++ java ldconfig libtool make nproc pgrep rpm rpmbuild svn swig tar touch unzip useradd wget yacc"
+  PACKAGE_DEPS="curl-devel fontconfig-devel freetype-devel expat-devel libGL-devel libGLU-devel libjpeg-turbo-devel libpng-devel libxml2-devel nasm readline-devel SDL-devel sqlite-devel unixODBC-devel zlib-devel gcc-gfortran"
 
   echo "Checking System Dependencies"
 

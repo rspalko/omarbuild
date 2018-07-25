@@ -53,9 +53,12 @@ retrieveDependencyWithWget()
     pushd .
     cd "${CACHE_LOCATION}"
     DOWNLOADFILENAME=$(basename $2)
+    echo $DOWNLOADFILENAME
     if [ ! -e "${DOWNLOADFILENAME}" ]; then
       if [[ $1 == kakadu ]]; then
         wget --http-user $KAKADU_USER --http-password $KAKADU_PASSWORD $2
+      elif [[ $2 == https* ]]; then
+        wget --no-check-certificate $2
       else
         wget $2
       fi
@@ -137,5 +140,7 @@ getExtractCommand()
     echo "tar xjf "
   elif [[ "$FILEOUT" =~ "Zip" ]]; then
     echo "unzip -o " 
+  else
+    echo "echo NO EXTRACT NEEDED FOR: "
   fi
 }

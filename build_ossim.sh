@@ -88,8 +88,8 @@ if [ $RUNOPTION -eq "1" -o $RUNOPTION -eq "3" ]; then
   cd "${DEPENDENCY_BUILD_LOCATION}"
 
   # Retrieve the dependencies
-  packages=("geos" "proj4" "tiff" "geotiff" "postgresql" "postgis" "gdal" "ffmpeg" "cmake" "groovy" "grails" "tomcat" "jai" "openjpeg" "mrsid" "laszip" "kakadu" "mvapich2" "pdal" "ogg" "theora" "vorbis" "yasm" "x264" "x265" "vpx")
-  urls=("${GEOS_URL}" "${PROJ4_URL}" "${TIFF_URL}" "${GEOTIFF_URL}" "${POSTGRESQL_URL}" "${POSTGIS_URL}" "${GDAL_URL}" "${FFMPEG_URL}" "${CMAKE_URL}" "${GROOVY_URL}" "${GRAILS_URL}" "${TOMCAT_URL}" "${JAI_URL}" "${OPENJPEG_URL}" "${MRSID_URL}" "${LASZIP_URL}" "${KAKADU_URL}" "${MVAPICH2_URL}" "${PDAL_URL}" "${OGG_URL}" "${THEORA_URL}" "${VORBIS_URL}" "${YASM_URL}" "${X264_URL}" "${X265_URL}" "${VPX_URL}")
+  packages=("geos" "proj4" "tiff" "geotiff" "postgresql" "postgis" "gdal" "ffmpeg" "cmake" "groovy" "grails" "tomcat" "jai" "openjpeg" "mrsid" "laszip" "kakadu" "mvapich2" "pdal" "ogg" "theora" "vorbis" "yasm" "nasm" "x264" "x265" "vpx")
+  urls=("${GEOS_URL}" "${PROJ4_URL}" "${TIFF_URL}" "${GEOTIFF_URL}" "${POSTGRESQL_URL}" "${POSTGIS_URL}" "${GDAL_URL}" "${FFMPEG_URL}" "${CMAKE_URL}" "${GROOVY_URL}" "${GRAILS_URL}" "${TOMCAT_URL}" "${JAI_URL}" "${OPENJPEG_URL}" "${MRSID_URL}" "${LASZIP_URL}" "${KAKADU_URL}" "${MVAPICH2_URL}" "${PDAL_URL}" "${OGG_URL}" "${THEORA_URL}" "${VORBIS_URL}" "${YASM_URL}" "${NASM_URL}" "${X264_URL}" "${X265_URL}" "${VPX_URL}")
 
   git clone -b ${OPENSCENEGRAPH_BRANCH} "${OPENSCENEGRAPH_URL}"
 
@@ -122,21 +122,6 @@ if [ $RUNOPTION -eq "1" -o $RUNOPTION -eq "3" ]; then
   let $((numpackages++))
   if [ $i -lt $numpackages ]; then
     getOssim
-    let $((i++))
-    echo $i > "${LAST_DEP_STEP_FILE}"
-  fi
-
-  # Get OMAR
-  let $((numpackages++))
-  if [ $i -lt $numpackages ]; then
-    getOmar
-    let $((i++))
-    echo $i > "${LAST_DEP_STEP_FILE}"
-  fi
-
-  let $((numpackages++))
-  if [ $i -lt $numpackages ]; then
-    getOmarMavenDeps
     let $((i++))
     echo $i > "${LAST_DEP_STEP_FILE}"
   fi
@@ -190,9 +175,9 @@ if [ $RUNOPTION -eq "2" -o $RUNOPTION -eq "3" ]; then
   touch "${TARGET_LOCATION}/${MARKER}"
 
   mkdir -p "${INSTALL_LOCATION}"
-  packages=("cmake" "OpenSceneGraph" "tiff" "proj4" "geotiff" "geos" "ogg" "vorbis" "theora" "yasm" "x264" "x265" "vpx" "ffmpeg" "gdal" "postgresql" "postgis" "openjpeg" "laszip" "kakadu" "mrsid" "mvapich2" "pdal") 
-  files=($CMAKE_FILENAME $OPENSCENEGRAPH_FILENAME $TIFF_FILENAME $PROJ4_FILENAME $GEOTIFF_FILENAME $GEOS_FILENAME $OGG_FILENAME $VORBIS_FILENAME $THEORA_FILENAME $YASM_FILENAME $X264_FILENAME $X265_FILENAME $VPX_FILENAME $FFMPEG_FILENAME $GDAL_FILENAME $POSTGRESQL_FILENAME $POSTGIS_FILENAME $OPENJPEG_FILENAME $LASZIP_FILENAME $KAKADU_FILENAME $MRSID_FILENAME $MVAPICH2_FILENAME $PDAL_FILENAME)
-  dirs=($CMAKE_DIRNAME $OPENSCENEGRAPH_DIRNAME $TIFF_DIRNAME $PROJ4_DIRNAME $GEOTIFF_DIRNAME $GEOS_DIRNAME $OGG_DIRNAME $VORBIS_DIRNAME $THEORA_DIRNAME $YASM_DIRNAME $X264_DIRNAME $X265_DIRNAME $VPX_DIRNAME $FFMPEG_DIRNAME $GDAL_DIRNAME $POSTGRESQL_DIRNAME $POSTGIS_DIRNAME $OPENJPEG_DIRNAME $LASZIP_DIRNAME $KAKADU_DIRNAME $MRSID_DIRNAME $MVAPICH2_DIRNAME $PDAL_DIRNAME)
+  packages=("cmake" "OpenSceneGraph" "tiff" "proj4" "geotiff" "geos" "ogg" "vorbis" "theora" "yasm" "nasm" "x264" "x265" "vpx" "ffmpeg" "gdal" "postgresql" "postgis" "openjpeg" "laszip" "kakadu" "mrsid" "mvapich2" "pdal") 
+  files=($CMAKE_FILENAME $OPENSCENEGRAPH_FILENAME $TIFF_FILENAME $PROJ4_FILENAME $GEOTIFF_FILENAME $GEOS_FILENAME $OGG_FILENAME $VORBIS_FILENAME $THEORA_FILENAME $YASM_FILENAME $NASM_FILENAME $X264_FILENAME $X265_FILENAME $VPX_FILENAME $FFMPEG_FILENAME $GDAL_FILENAME $POSTGRESQL_FILENAME $POSTGIS_FILENAME $OPENJPEG_FILENAME $LASZIP_FILENAME $KAKADU_FILENAME $MRSID_FILENAME $MVAPICH2_FILENAME $PDAL_FILENAME)
+  dirs=($CMAKE_DIRNAME "" $TIFF_DIRNAME $PROJ4_DIRNAME $GEOTIFF_DIRNAME $GEOS_DIRNAME $OGG_DIRNAME $VORBIS_DIRNAME $THEORA_DIRNAME $YASM_DIRNAME $NASM_DIRNAME $X264_DIRNAME $X265_DIRNAME $VPX_DIRNAME $FFMPEG_DIRNAME $GDAL_DIRNAME $POSTGRESQL_DIRNAME $POSTGIS_DIRNAME $OPENJPEG_DIRNAME $LASZIP_DIRNAME $KAKADU_DIRNAME $MRSID_DIRNAME $MVAPICH2_DIRNAME $PDAL_DIRNAME)
 
   numpackages=${#packages[@]}
   i=0
@@ -234,54 +219,4 @@ ences"
     let $((i++))
     echo $i > "${LAST_BUILD_STEP_FILE}"
   fi
-
-  let $((numpackages++))
-  if [ $i -lt $numpackages ]; then
-    buildJoms
-    let $((i++))
-    echo $i > "${LAST_BUILD_STEP_FILE}"
-  fi
-
-  let $((numpackages++))
-  if [ $i -lt $numpackages ]; then
-    extractTomcat
-    let $((i++))
-    echo $i > "${LAST_BUILD_STEP_FILE}"
-  fi
-
-  source $SWD/resources/code_changes
-  let $((numpackages++))
-  if [ $i -lt $numpackages ]; then
-    makeOmarCodeChanges
-    let $((i++))
-    echo $i > "${LAST_BUILD_STEP_FILE}"
-  fi
-  
-  let $((numpackages++))
-  if [ $i -lt $numpackages ]; then
-    buildWar
-    let $((i++))
-    echo $i > "${LAST_BUILD_STEP_FILE}"
-  fi
-  
-  let $((numpackages++))
-  if [ $i -lt $numpackages ]; then
-    buildRpm
-    let $((i++))
-    echo $i > "${LAST_BUILD_STEP_FILE}"
-  fi
-
-  let $((numpackages++))
-  if [ $i -lt $numpackages ]; then
-    buildPgdata
-    let $((i++))
-    echo $i > "${LAST_BUILD_STEP_FILE}"
-  fi
-
-  # Provide info on the output installer files
-  chmod 755 "${DEPENDENCY_BUILD_LOCATION}/jai/${JAI_FILENAME}"
-  echo -e "\e[1;32mJAI Installer located at ${DEPENDENCY_BUILD_LOCATION}/jai/${JAI_FILENAME}.  Please run this file from ${JAVA_HOME} or copy to the desired installation system and perform the same\e[0m"
-  echo -e "\e[1;32mRPM located at /root/rpmbuild/RPMS/x86_64/omar-${OSSIM_VERSION}-${RELEASE_VERSION}.x86_64.rpm\e[0m"
-  echo -e "\e[1;32mInstall RPM with \"rpm -ivh /root/rpmbuild/RPMS/x86_64/omar-${OSSIM_VERSION}-${RELEASE_VERSION}.x86_64.rpm\" or move to the target installation system and perform the same\e[0m"
-
 fi

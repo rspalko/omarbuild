@@ -31,7 +31,7 @@ buildDependenciesWithMake()
     openjpeg)
       cmake -G "Unix Makefiles" -DBUILD_THIRDPARTY=true -DCMAKE_INSTALL_PREFIX="${INSTALL_LOCATION}"
       ;;
-    openscenegraph)
+    OpenSceneGraph)
       cmake -DCMAKE_INSTALL_PREFIX="${INSTALL_LOCATION}"
       ;; 
     pdal)
