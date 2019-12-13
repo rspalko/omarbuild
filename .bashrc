@@ -1,8 +1,10 @@
+#!/bin/bash
+
 # Load utility functions
 # Save script location so we can load script dependencies
-pushd `dirname "$1"` > /dev/null
+pushd `dirname "${BASH_SOURCE[0]}"` > /dev/null
 SWD=`pwd`
-popd > /dev/null
+echo $SWD
 
 export TARGET_LOCATION=/opt/ossim-1.9.0-src
 # Load URLs for dependency code downloads
@@ -22,3 +24,5 @@ export OSSIM_PREFS_FILE="${BUILD_LOCATION}/ossim_preferences"
 
 # Dependency Checker
 #source $SWD/resources/dependency_check
+popd > /dev/null
+
