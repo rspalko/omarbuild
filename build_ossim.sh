@@ -3,6 +3,7 @@
 # OMAR BUILD SCRIPT
 # Tested with OMAR 1.8.19 on CentOS 6.6 and 7.1.1503
 # upgraded to 1.9.0 and OSSIM Github (tested on CentOS 6.6 with devtoolset-2 for Kakadu required GCC)
+# Now running this on CentOS 7.7 with devtoolset-8 and ossim 1.9
 
 # Set umask to avoid permission issues 
 umask 0022
@@ -21,7 +22,7 @@ source $SWD/resources/build_functions
 source $SWD/resources/release_version
 
 # Load URLs for dependency code downloads
-source $SWD/resources/omar_dependency_urls
+source $SWD/resources/ossim_dependency_urls
 source $SWD/resources/kakadu_config
 source $SWD/resources/mrsid_config
 
@@ -61,7 +62,7 @@ TARGET_LOCATION=${TARGET_LOCATION:-$DEFAULT_TARGET_LOCATION}
 MARKER=.omarbuildmarker
  
 # Setup commonly used variables for files and directories
-source $SWD/resources/files_and_dirs
+source $SWD/resources/files_and_dirs_ossim
 
 if [ $RUNOPTION -eq "1" -o $RUNOPTION -eq "3" ]; then
 
@@ -79,7 +80,7 @@ if [ $RUNOPTION -eq "1" -o $RUNOPTION -eq "3" ]; then
   CACHE_LOCATION=${CACHE_LOCATION:-$DEFAULT_CACHE_LOCATION}
   mkdir -p "${CACHE_LOCATION}"
 
-  source $SWD/resources/omar_dependency_urls
+  source $SWD/resources/ossim_dependency_urls
 
   mkdir -p "${TARGET_LOCATION}"
   #touch "${TARGET_LOCATION}/${MARKER}"
@@ -88,10 +89,8 @@ if [ $RUNOPTION -eq "1" -o $RUNOPTION -eq "3" ]; then
   cd "${DEPENDENCY_BUILD_LOCATION}"
 
   # Retrieve the dependencies
-  packages=("geos" "proj4" "tiff" "geotiff" "postgresql" "postgis" "gdal" "ffmpeg" "cmake" "groovy" "grails" "tomcat" "jai" "openjpeg" "mrsid" "laszip" "kakadu" "mvapich2" "pdal" "ogg" "theora" "vorbis" "yasm" "nasm" "x264" "x265" "vpx")
-  urls=("${GEOS_URL}" "${PROJ4_URL}" "${TIFF_URL}" "${GEOTIFF_URL}" "${POSTGRESQL_URL}" "${POSTGIS_URL}" "${GDAL_URL}" "${FFMPEG_URL}" "${CMAKE_URL}" "${GROOVY_URL}" "${GRAILS_URL}" "${TOMCAT_URL}" "${JAI_URL}" "${OPENJPEG_URL}" "${MRSID_URL}" "${LASZIP_URL}" "${KAKADU_URL}" "${MVAPICH2_URL}" "${PDAL_URL}" "${OGG_URL}" "${THEORA_URL}" "${VORBIS_URL}" "${YASM_URL}" "${NASM_URL}" "${X264_URL}" "${X265_URL}" "${VPX_URL}")
-
-  git clone -b ${OPENSCENEGRAPH_BRANCH} "${OPENSCENEGRAPH_URL}"
+  packages=("geos" "proj4" "tiff" "geotiff" "postgresql" "postgis" "gdal" "ffmpeg" "cmake" "openjpeg" "mrsid" "laszip" "kakadu" "mvapich2" "pdal" "ogg" "theora" "vorbis" "yasm" "nasm" "x264" "x265")
+  urls=("${GEOS_URL}" "${PROJ4_URL}" "${TIFF_URL}" "${GEOTIFF_URL}" "${POSTGRESQL_URL}" "${POSTGIS_URL}" "${GDAL_URL}" "${FFMPEG_URL}" "${CMAKE_URL}" "${OPENJPEG_URL}" "${MRSID_URL}" "${LASZIP_URL}" "${KAKADU_URL}" "${MVAPICH2_URL}" "${PDAL_URL}" "${OGG_URL}" "${THEORA_URL}" "${VORBIS_URL}" "${YASM_URL}" "${NASM_URL}" "${X264_URL}" "${X265_URL}")
 
   numpackages=${#packages[@]}
   i=0
@@ -110,6 +109,11 @@ if [ $RUNOPTION -eq "1" -o $RUNOPTION -eq "3" ]; then
       i=$(cat "${LAST_DEP_STEP_FILE}")
     fi
     echo
+  else 
+    git clone -b ${OPENSCENEGRAPH_BRANCH} "${OPENSCENEGRAPH_URL}"
+    git clone -b ${VPX_BRANCH} "${VPX_URL}"
+    git clone "${AOM_URL}"
+    git clone "${BASIS_URL}"
   fi
   for ((i;i<$numpackages;i++)); do
     echo $i > "${LAST_DEP_STEP_FILE}"
@@ -175,9 +179,9 @@ if [ $RUNOPTION -eq "2" -o $RUNOPTION -eq "3" ]; then
   touch "${TARGET_LOCATION}/${MARKER}"
 
   mkdir -p "${INSTALL_LOCATION}"
-  packages=("cmake" "OpenSceneGraph" "tiff" "proj4" "geotiff" "geos" "ogg" "vorbis" "theora" "yasm" "nasm" "x264" "x265" "vpx" "ffmpeg" "gdal" "postgresql" "postgis" "openjpeg" "laszip" "kakadu" "mrsid" "mvapich2" "pdal") 
+  packages=("cmake" "OpenSceneGraph" "tiff" "proj4" "geotiff" "geos" "ogg" "vorbis" "theora" "yasm" "nasm" "x264" "x265" "libvpx" "ffmpeg" "gdal" "postgresql" "postgis" "openjpeg" "laszip" "kakadu" "mrsid" "mvapich2" "pdal") 
   files=($CMAKE_FILENAME $OPENSCENEGRAPH_FILENAME $TIFF_FILENAME $PROJ4_FILENAME $GEOTIFF_FILENAME $GEOS_FILENAME $OGG_FILENAME $VORBIS_FILENAME $THEORA_FILENAME $YASM_FILENAME $NASM_FILENAME $X264_FILENAME $X265_FILENAME $VPX_FILENAME $FFMPEG_FILENAME $GDAL_FILENAME $POSTGRESQL_FILENAME $POSTGIS_FILENAME $OPENJPEG_FILENAME $LASZIP_FILENAME $KAKADU_FILENAME $MRSID_FILENAME $MVAPICH2_FILENAME $PDAL_FILENAME)
-  dirs=($CMAKE_DIRNAME "" $TIFF_DIRNAME $PROJ4_DIRNAME $GEOTIFF_DIRNAME $GEOS_DIRNAME $OGG_DIRNAME $VORBIS_DIRNAME $THEORA_DIRNAME $YASM_DIRNAME $NASM_DIRNAME $X264_DIRNAME $X265_DIRNAME $VPX_DIRNAME $FFMPEG_DIRNAME $GDAL_DIRNAME $POSTGRESQL_DIRNAME $POSTGIS_DIRNAME $OPENJPEG_DIRNAME $LASZIP_DIRNAME $KAKADU_DIRNAME $MRSID_DIRNAME $MVAPICH2_DIRNAME $PDAL_DIRNAME)
+  dirs=($CMAKE_DIRNAME "" $TIFF_DIRNAME $PROJ4_DIRNAME $GEOTIFF_DIRNAME $GEOS_DIRNAME $OGG_DIRNAME $VORBIS_DIRNAME $THEORA_DIRNAME $YASM_DIRNAME $NASM_DIRNAME $X264_DIRNAME $X265_DIRNAME "" $FFMPEG_DIRNAME $GDAL_DIRNAME $POSTGRESQL_DIRNAME $POSTGIS_DIRNAME $OPENJPEG_DIRNAME $LASZIP_DIRNAME $KAKADU_DIRNAME $MRSID_DIRNAME $MVAPICH2_DIRNAME $PDAL_DIRNAME)
 
   numpackages=${#packages[@]}
   i=0

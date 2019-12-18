@@ -19,7 +19,7 @@ buildDependenciesWithMake()
       PKG_CONFIG_PATH="${INSTALL_LOCATION}/lib/pkgconfig" CFLAGS="-I${INSTALL_LOCATION}/include" LDFLAGS="-L${INSTALL_LOCATION}/lib" ./configure --prefix="${INSTALL_LOCATION}" --enable-gpl --enable-libtheora --enable-libvpx --enable-libx264 --enable-libx265 --enable-shared --disable-static
       ;;
     gdal)
-      ./configure --prefix="${INSTALL_LOCATION}" --with-geos="${INSTALL_LOCATION}/bin/geos-config" --with-libtiff="${INSTALL_LOCATION}" --with-geotiff="${INSTALL_LOCATION}"
+      ./configure --prefix="${INSTALL_LOCATION}" --with-proj="${INSTALL_LOCATION}" --with-geos="${INSTALL_LOCATION}/bin/geos-config" --with-libtiff="${INSTALL_LOCATION}" --with-geotiff="${INSTALL_LOCATION}"
       ;;
     geotiff)
       ./configure --prefix="${INSTALL_LOCATION}" --with-jpeg-yes --with-libtiff="${INSTALL_LOCATION}" --with-zlib=yes --enable-incode-epsg --with-proj="${INSTALL_LOCATION}"
@@ -38,12 +38,12 @@ buildDependenciesWithMake()
       cmake -DCMAKE_INSTALL_PREFIX="${INSTALL_LOCATION}"
       ;;
     postgis)
-      ./configure --prefix="${PGINSTALL}" --with-geosconfig="${INSTALL_LOCATION}/bin/geos-config" --with-projdir="${INSTALL_LOCATION}" --with-gdalconfig="${INSTALL_LOCATION}/bin/gdal-config"
+      ./configure --prefix="${PGINSTALL}" --without-json --with-geosconfig="${INSTALL_LOCATION}/bin/geos-config" --with-projdir="${INSTALL_LOCATION}" --with-gdalconfig="${INSTALL_LOCATION}/bin/gdal-config"
       ;;
     theora)
       ./configure --prefix="${INSTALL_LOCATION}" --with-ogg="${INSTALL_LOCATION}" --with-vorbis="${INSTALL_LOCATION}"
       ;;
-    vpx)
+    libvpx)
       ./configure --prefix="${INSTALL_LOCATION}" --enable-shared
       ;;
     x264)

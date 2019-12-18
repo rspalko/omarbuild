@@ -79,10 +79,10 @@ getOssim()
   rm -rf ossim-src
   mkdir ossim-src
   cd ossim-src
-  git clone -b dev "${OSSIM_URL}"
-  git clone -b dev "${OMS_URL}"
-  git clone -b dev "${OSSIM_PLUGINS_URL}"
-  git clone -b dev "${OSSIM_VIDEO_URL}"
+  git clone -b ${OSSIM_BRANCH} "${OSSIM_URL}"
+  git clone -b ${OSSIM_BRANCH} "${OMS_URL}"
+  git clone -b ${OSSIM_BRANCH} "${OSSIM_PLUGINS_URL}"
+  git clone -b ${OSSIM_BRANCH} "${OSSIM_VIDEO_URL}"
   #svn co "${OSSIM_URL}"
   #mv trunk ossim-src
   #cd "${OMS_HOME}/joms/lib"
